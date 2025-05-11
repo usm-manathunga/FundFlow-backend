@@ -47,3 +47,17 @@ GET	/api/v1/admin/loan/getAllLoans	-> Get all loan applications
 Authentication
 
 POST	/api/v1/login	-> Login with email & password
+
+
+###MongoDB Logs
+Every loan application is logged in the loan_logs collection with:
+
+NIC
+
+Loan details
+
+Credit score
+
+Approval status
+
+Timestamp
