@@ -3,18 +3,25 @@ package org.example.fundflow.service.Impl;
 import org.example.fundflow.dto.LoanApplicationDTO;
 import org.example.fundflow.entity.Customer;
 import org.example.fundflow.entity.LoanApplication;
+import org.example.fundflow.entity.LoanLog;
 import org.example.fundflow.repository.CustomerRepository;
 import org.example.fundflow.repository.LoanApplicationRepository;
+import org.example.fundflow.repository.LoanLogRepository;
 import org.example.fundflow.service.CustomerService;
 import org.example.fundflow.service.LoanApplicationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class LoanApplicationServiceImpl implements LoanApplicationService {
     private final LoanApplicationRepository repository;
     private final CustomerService customerService;
+
+    @Autowired
+    private LoanLogRepository loanLogRepository;
 
 
     public LoanApplicationServiceImpl(LoanApplicationRepository repository, CustomerService customerService) {
@@ -26,8 +33,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
     @Override
     public LoanApplication applyLoan(LoanApplicationDTO dto) {
-        String NIC = "123456789V"; // TODO: need to remove
-        Customer customer = customerService.getCustomerByNic(NIC);
+        System.out.println(" Loan Dto : "+dto);
+//        Customer customer = customerService.getCustomerByNic(NIC);
+        Customer customer = customerService.getCustomerById(dto.getId());
         LoanApplication loan = new LoanApplication();
         loan.setLoanAmount(dto.getLoanAmount());
         loan.setDurationMonths(dto.getDurationMonths());
@@ -52,7 +60,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
             loan.setStatus("Rejected");
             loan.setRecommendation("Not eligible based on current profile");
         }
-         //TODO : need to add mongo db
+
+        LoanLog log = new LoanLog();
+        log.setNic(customer.getNic());
+        log.setLoanAmount(dto.getLoanAmount());
+        log.setDurationMonths(dto.getDurationMonths());
+        log.setPurpose(dto.getPurpose());
+        log.setScore(score);
+        log.setStatus(loan.getStatus());
+        log.setRecommendation(loan.getRecommendation());
+        log.setTimestamp(LocalDateTime.now());
+
+        loanLogRepository.save(log);
         return repository.save(loan);
     }
 

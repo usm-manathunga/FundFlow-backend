@@ -14,4 +14,6 @@ public interface CustomerService {
     public void deleteCustomer(Long id);
 
     public Customer getCustomerByNic(String nic);
+
+    Customer getCustomerById(Long id);
 }
